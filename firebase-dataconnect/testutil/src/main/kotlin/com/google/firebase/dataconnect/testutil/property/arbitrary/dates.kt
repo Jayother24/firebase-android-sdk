@@ -18,7 +18,9 @@
 
 package com.google.firebase.dataconnect.testutil.property.arbitrary
 
+import com.google.firebase.dataconnect.LocalDate
 import com.google.firebase.dataconnect.testutil.dateFromYearMonthDayUTC
+import com.google.firebase.dataconnect.testutil.property.arbitrary.DateEdgeCases.maxDayForMonth
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.filterNot
@@ -35,6 +37,9 @@ data class DateTestData(
   val month: Int,
   val day: Int
 ) {
+  val localDate: LocalDate
+    get() = LocalDate(year = year, month = month, day = day)
+
   fun withMillisOffset(millisOffset: Long): DateTestData =
     copy(date = Date(date.time + millisOffset))
 }
@@ -121,24 +126,26 @@ object DateEdgeCases {
       max.withMillisOffset(1),
       zero.withMillisOffset(1),
     )
-}
 
-private fun maxDayForMonth(month: Int): Int {
-  return when (month) {
-    1 -> 31
-    2 -> 28
-    3 -> 31
-    4 -> 30
-    5 -> 31
-    6 -> 30
-    7 -> 31
-    8 -> 31
-    9 -> 30
-    10 -> 31
-    11 -> 30
-    12 -> 31
-    else ->
-      throw IllegalArgumentException("invalid month: $month (must be between 1 and 12, inclusive)")
+  fun maxDayForMonth(month: Int): Int {
+    return when (month) {
+      1 -> 31
+      2 -> 28
+      3 -> 31
+      4 -> 30
+      5 -> 31
+      6 -> 30
+      7 -> 31
+      8 -> 31
+      9 -> 30
+      10 -> 31
+      11 -> 30
+      12 -> 31
+      else ->
+        throw IllegalArgumentException(
+          "invalid month: $month (must be between 1 and 12, inclusive)"
+        )
+    }
   }
 }
 
