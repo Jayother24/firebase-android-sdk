@@ -81,16 +81,16 @@ class DateScalarIntegrationTest : DemoConnectorIntegrationTestBase() {
 
   @Test
   fun nonNullDatesWithDefaults_insert_ShouldUseDefaultValuesIfNoVariablesSpecified() = runTest {
-    val key = connector.insertNonNullDatesWithDefaults.execute {}.data.key
-    val queryResult = connector.getNonNullDatesWithDefaultsByKey.execute(key)
+    val key = connector.dateNonNullableWithDefaultsInsert.execute {}.data.key
+    val queryResult = connector.dateNonNullableWithDefaultsGetByKey.execute(key)
 
     // Since we can't know the exact value of `request.time` just make sure that the exact same
     // value is used for both fields to which it is set.
     val expectedRequestTime = queryResult.data.item!!.requestTime1
 
     queryResult.data shouldBe
-      GetNonNullDatesWithDefaultsByKeyQuery.Data(
-        GetNonNullDatesWithDefaultsByKeyQuery.Data.Item(
+      DateNonNullableWithDefaultsGetByKeyQuery.Data(
+        DateNonNullableWithDefaultsGetByKeyQuery.Data.Item(
           valueWithVariableDefault = dateFromYearMonthDayUTC(6904, 11, 30),
           valueWithSchemaDefault = dateFromYearMonthDayUTC(2112, 1, 31),
           epoch = EdgeCases.dates.zero.date,
@@ -230,18 +230,21 @@ class DateScalarIntegrationTest : DemoConnectorIntegrationTestBase() {
 
   @Test
   fun nullableDatesWithDefaults_insert_ShouldUseDefaultValuesIfNoVariablesSpecified() = runTest {
-    val key = connector.insertDateNullablesWithDefaults.execute {}.data.key
-    val queryResult = connector.getNullableDatesWithDefaultsByKey.execute(key)
+    val key = connector.dateNullableWithDefaultsInsert.execute {}.data.key
+    val queryResult = connector.dateNullableWithDefaultsGetByKey.execute(key)
 
     // Since we can't know the exact value of `request.time` just make sure that the exact same
     // value is used for both fields to which it is set.
     val expectedRequestTime = queryResult.data.item!!.requestTime1
 
     queryResult.data shouldBe
-      GetNullableDatesWithDefaultsByKeyQuery.Data(
-        GetNullableDatesWithDefaultsByKeyQuery.Data.Item(
+      DateNullableWithDefaultsGetByKeyQuery.Data(
+        DateNullableWithDefaultsGetByKeyQuery.Data.Item(
           valueWithVariableDefault = dateFromYearMonthDayUTC(8113, 2, 9),
+          valueWithVariableNullDefault = null,
           valueWithSchemaDefault = dateFromYearMonthDayUTC(1921, 12, 2),
+          valueWithSchemaNullDefault = null,
+          valueWithNoDefault = null,
           epoch = EdgeCases.dates.zero.date,
           requestTime1 = expectedRequestTime,
           requestTime2 = expectedRequestTime,
@@ -342,7 +345,7 @@ class DateScalarIntegrationTest : DemoConnectorIntegrationTestBase() {
    * without possible confounding from date deserialization.
    */
   @Serializable
-  private data class GetDateByKeyQueryStringData(val value: DateStringValue?) {
+  private data class GetDateByKeyQueryStringData(val item: DateStringValue?) {
     constructor(value: String) : this(DateStringValue(value))
 
     @Serializable data class DateStringValue(val value: String?)
